@@ -26,6 +26,7 @@
 ```bash
 git clone https://github.com/Subhashis360/subsonic
 cd subsonic
+pip3 install -r requirements.txt
 python3 subsonic.py
 ```
 
