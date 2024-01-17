@@ -93,7 +93,7 @@ sources = [
     ("https://subdomainfinder.c99.nl/scans/{yesterday}/{domain}", re.compile(rf"https?://([\w-]+\.{domain})")),
 ]
 
-with ThreadPoolExecutor(max_workers=300) as executor:
+with ThreadPoolExecutor(max_workers=200) as executor:
     executor.map(process_source, sources)
 
 
