@@ -37,7 +37,7 @@ def get_subdomains(url, pattern, domain):
         with httpx.Client() as request:
             user_agent = UserAgent().random
             headers = {'User-Agent': user_agent}
-            response = request.get(url, timeout=10, headers=headers)
+            response = request.get(url, timeout=15, headers=headers)
             if response.status_code == 200:
                 content = response.text
                 subdomains = pattern.findall(content)
@@ -52,29 +52,28 @@ def probe_url(url, unique_urls):
     try:
         user_agent = UserAgent().random
         headers = {'User-Agent': user_agent}
-
         http_url = "http://" + url
-        http_response = requests.get(http_url, timeout=5, headers=headers)
-        if http_response.status_code == 200:
-            print(G+f"[*] Active Found => {http_url}")
-            unique_urls.add(http_url)
-            with open(output_file, "a") as file:
-                file.write(f"{http_url}\n")
-
         https_url = "https://" + url
-        https_response = requests.get(https_url, timeout=5, headers=headers)
-        if https_response.status_code == 200:
-            print(G+f"[*] Active Found => {https_url}")
-            unique_urls.add(https_url)
-            with open(output_file, "a") as file:
-                file.write(f"{https_url}\n")
+        with httpx.Client() as http_client:
+            http_response = http_client.get(http_url, timeout=10, headers=headers)
+        if http_response.status_code == 200:
+            active_url = http_url
+        elif httpx.Client().get(https_url, timeout=10, headers=headers).status_code == 200:
+            active_url = https_url
+        else:
+            return
+        print(G+f"[*] Active Found => {active_url}")
+        unique_urls.add(active_url)
 
-    except requests.RequestException:
+        with open(output_file, "a") as file:
+            file.write(f"{active_url}\n")
+    except httpx.RequestError:
         pass
 
 def process_source(source):
     source_url, source_pattern = source
-    get_subdomains(source_url.format(domain=domain), source_pattern, domain)
+    with ThreadPoolExecutor(25) as executor:
+        executor.submit(get_subdomains, source_url.format(domain=domain), source_pattern, domain)
 
 sources = [
     ("https://www.abuseipdb.com/whois/{domain}", re.compile(r'<li>\w.*</li>')),
@@ -93,14 +92,20 @@ sources = [
     ("https://subdomainfinder.c99.nl/scans/{yesterday}/{domain}", re.compile(rf"https?://([\w-]+\.{domain})")),
 ]
 
-with ThreadPoolExecutor(max_workers=200) as executor:
+with ThreadPoolExecutor(15) as executor:
     executor.map(process_source, sources)
 
 
 with open(f"{domain}.txt", "w") as file:
-    for subdomain in subdomains_set:
-        file.write(subdomain + "\n")
-print(G+f"[=>] Subdomains for {domain} have been saved in [[{domain}.txt]]")
+    if subdomains_set:
+        for subdomain in subdomains_set:
+            file.write(subdomain + "\n")
+    else:
+        print(R+f"[=>] No Subdomains Found for this [[{domain}]]")
+        print(G+"[=>] Thanks For using Subsonic")
+        exit()
+
+print(G+f"[=>] Subdomains for {domain} have been saved in [[{domain}.txt]] Total Found => [{len(subdomains_set)}]")
 
 probe_input = input(R+f"[=>] Do you want to Fetch Working Subdomains From this {domain} ? (yes/no): ").lower().strip()
 
@@ -108,13 +113,13 @@ if probe_input.startswith("y"):
     with open(filename, "r") as file:
         urls = file.read().splitlines()
 
-    with ThreadPoolExecutor(max_workers=20) as executor:
+    with ThreadPoolExecutor(50) as executor:
         executor.map(lambda url: probe_url(url, unique_urls), urls)
         
     if unique_urls:
         with open(output_file, "w") as file:
             file.write("\n".join(unique_urls))
-        print(R+f"[=>] Active Results have been saved in [[{output_file}]]")
+        print(R+f"[=>] Active Results of [{len(unique_urls)}] have been saved in [[{output_file}]]")
         print(G+"[=>] Thanks For using Subsonic")
     else:
         print(R+f"[=>] No active Subdomain Found")
