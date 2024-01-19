@@ -37,7 +37,7 @@ def get_subdomains(url, pattern, domain):
         with httpx.Client() as request:
             user_agent = UserAgent().random
             headers = {'User-Agent': user_agent}
-            response = request.get(url, timeout=15, headers=headers)
+            response = request.get(url, timeout=30, headers=headers)
             if response.status_code == 200:
                 content = response.text
                 subdomains = pattern.findall(content)
@@ -54,12 +54,12 @@ def probe_url(url, unique_urls):
         headers = {'User-Agent': user_agent}
         http_url = "http://" + url
         https_url = "https://" + url
-        with httpx.Client() as http_client:
-            http_response = http_client.get(http_url, timeout=10, headers=headers)
-        if http_response.status_code == 200:
-            active_url = http_url
-        elif httpx.Client().get(https_url, timeout=10, headers=headers).status_code == 200:
+
+        https_response = requests.get(https_url, timeout=5, headers=headers)
+        if https_response.status_code == 200:
             active_url = https_url
+        elif requests.get(http_url, timeout=5, headers=headers).status_code == 200:
+            active_url = http_url
         else:
             return
         print(G+f"[*] Active Found => {active_url}")
@@ -113,7 +113,7 @@ if probe_input.startswith("y"):
     with open(filename, "r") as file:
         urls = file.read().splitlines()
 
-    with ThreadPoolExecutor(50) as executor:
+    with ThreadPoolExecutor(55) as executor:
         executor.map(lambda url: probe_url(url, unique_urls), urls)
         
     if unique_urls:
