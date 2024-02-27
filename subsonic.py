@@ -90,7 +90,18 @@ sources = [
     ("https://crt.sh/?q=%25.{domain}", re.compile(rf"\b[a-zA-Z0-9.*-]+\.{re.escape(domain)}\b")),
     ("https://shrewdeye.app/domains/{domain}.txt", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
     ("https://subdomainfinder.c99.nl/scans/{yesterday}/{domain}", re.compile(rf"https?://([\w-]+\.{domain})")),
+    ("https://www.google.com/search?q=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    ("https://crt.sh/?q=%25.{domain}", re.compile(r'>((?:[\w-]+\.)+[\w-]+)</TD>')),
+    ("https://www.bing.com/search?q=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    ("https://www.baidu.com/s?wd=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    ("https://search.yahoo.com/search?p=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    ("https://searchdns.netcraft.com/?restriction=site+contains&host=.{domain}", re.compile(r'(\w+\.{domain})')),
+    ("https://www.ask.com/web?q=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    ("https://www.threatcrowd.org/searchApi/v2/domain/report/?domain={domain}", None),
+    ("https://crt.sh/?q=%25.{domain}", re.compile(r'>((?:[\w-]+\.)+[\w-]+)</TD>')),
+    ("https://dns.bufferover.run/dns?q=.{domain}", None)
 ]
+
 
 with ThreadPoolExecutor(15) as executor:
     executor.map(process_source, sources)
