@@ -97,6 +97,20 @@ sources = [
     ("https://search.yahoo.com/search?p=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
     ("https://searchdns.netcraft.com/?restriction=site+contains&host=.{domain}", re.compile(r'(\w+\.{domain})')),
     ("https://www.ask.com/web?page=2&q=site:{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    (f"https://otx.alienvault.com/api/v1/indicators/hostname/{domain}/passive_dns", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://api.subdomain.center/?domain={domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://columbus.elmasy.com/api/lookup/{domain}?days=-1", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://jonlu.ca/anubis/subdomains/{domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://dnsrepo.noc.org/?domain={domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://api.hackertarget.com/hostsearch/?q={domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://rapiddns.io/subdomain/{domain}?full=1", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://urlscan.io/api/v1/search/?q=page.domain:{domain}&size=10000", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://shrewdeye.app/domains/{domain}.txt", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"http://web.archive.org/cdx/search/cdx?url=*.{domain}/*&output=txt&fl=original&collapse=urlkey", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://crt.sh/?q=%25.{domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    (f"https://subdomainfinder.c99.nl/scans/{yesterday}/{domain}", re.compile(rf"https?://([\w-]+\.{domain})")),
+    (f"https://searchdns.netcraft.com/?host=.{domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
+    ("https://jldc.me/anubis/subdomains/{domain}", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
 ]
 
 
