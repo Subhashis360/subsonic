@@ -4,6 +4,7 @@ import httpx
 import datetime as dt
 from fake_useragent import UserAgent
 import requests
+from urllib.parse import urlparse, urljoin
 
 G = '\033[1;32m'
 R = '\033[1;31m'
@@ -56,6 +57,10 @@ def probe_url(url, unique_urls):
         https_url = "https://" + url
 
         https_response = requests.get(https_url, timeout=5, headers=headers)
+      
+        if urlparse(https_url).netloc != urlparse(final_url).netloc:
+          return
+          
         if https_response.status_code == 200:
             active_url = https_url
         elif requests.get(http_url, timeout=5, headers=headers).status_code == 200:
