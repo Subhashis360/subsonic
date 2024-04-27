@@ -110,7 +110,8 @@ sources = [
     (f"https://crt.sh/?q=%25.{domain}", re.compile(r'>((?:[\w-]+\.)+[\w-]+)</TD>')),
     (f"https://www.bing.com/search?q=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
     (f"https://www.baidu.com/s?wd=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
-    (f"https://search.yahoo.com/search?p=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)'))
+    (f"https://search.yahoo.com/search?p=site%3A{domain}", re.compile(r'(https?://(?:[\w-]+\.)+[\w-]+(?:\/\w*)*)')),
+    (f"https://web.archive.org/cdx/search/cdx?url=*.{domain}/*&output=txt&fl=original&collapse=urlkey&page=/", re.compile(rf"\b[a-zA-Z0-9]+\b\.{domain}\b")),
 ]
 
 
