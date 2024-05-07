@@ -33,21 +33,19 @@ yesterday = dt.date.today() - dt.timedelta(days=1)
 subdomains_set = set()
 unique_urls = set()
 
-def get_subdomains(url, pattern, domain):
-    try:
-        with httpx.Client() as request:
-            user_agent = UserAgent().random
-            headers = {'User-Agent': user_agent}
-            response = request.get(url, timeout=30, headers=headers)
-            if response.status_code == 200:
-                content = response.text
-                subdomains = pattern.findall(content)
-                for subdomain in subdomains:
-                    if subdomain.endswith(f".{domain}"):
-                        print(G+"[*] Found => "+subdomain)
-                        subdomains_set.add(subdomain)
-    except Exception as e:
-        pass
+def get_subdomains(url, pattern):
+                try:
+                    user_agent = UserAgent().random
+                    headers = {'User-Agent': user_agent}
+                    response = requests.get(url, timeout=10, headers=headers)
+                    if response.status_code == 200:
+                        content = response.text
+                        subdomains = pattern.findall(content)
+                        for subdomain in subdomains:
+                            if subdomain.endswith(f".{domain}"):
+                                subdomains_set.add(subdomain)
+                except Exception as e:
+                    pass
 
 def probe_url(url, unique_urls):
     try:
